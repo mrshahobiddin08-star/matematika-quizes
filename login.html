@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Natijalar — kirish</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2440; --ink-soft:#4A5170; --paper:#FAF8F3; --card:#FFFFFF;
+    --line:#E4E0D6; --teal:#2F8F86; --teal-dark:#1F6B64; --wrong:#D64545;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    font-family:'Inter',system-ui,sans-serif; color:var(--ink);
+    background-color:var(--paper);
+    background-image:linear-gradient(90deg, var(--line) 1px, transparent 1px),
+                      linear-gradient(180deg, var(--line) 1px, transparent 1px);
+    background-size:34px 34px;
+    padding:20px;
+  }
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:32px 28px; width:100%; max-width:380px;
+  }
+  h1{font-family:'Fraunces',serif; font-size:1.4rem; margin:0 0 6px;}
+  p{color:var(--ink-soft); font-size:0.92rem; margin:0 0 20px; line-height:1.5;}
+  label{font-size:0.88rem; color:var(--ink-soft); display:block; margin-bottom:6px;}
+  input[type=password]{
+    width:100%; font-size:1rem; padding:11px 13px; border:1px solid var(--line);
+    border-radius:10px; background:var(--paper); color:var(--ink);
+  }
+  input[type=password]:focus{outline:2px solid var(--teal); outline-offset:1px;}
+  button{
+    margin-top:16px; width:100%; padding:12px; border:none; border-radius:10px;
+    background:var(--teal-dark); color:#fff; font-weight:600; font-size:0.98rem;
+    cursor:pointer;
+  }
+  button:hover{background:var(--teal);}
+  .err{color:var(--wrong); font-size:0.88rem; margin-top:12px;}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Natijalar sahifasi</h1>
+    <p>Bu sahifa faqat o'qituvchi/administrator uchun. Davom etish uchun parolni kiriting.</p>
+    <form method="POST">
+      <label for="parol">Parol</label>
+      <input type="password" id="parol" name="parol" autofocus required>
+      <button type="submit">Kirish</button>
+    </form>
+    {% if xato %}
+      <div class="err">Parol noto'g'ri. Qaytadan urinib ko'ring.</div>
+    {% endif %}
+  </div>
+</body>
+</html>

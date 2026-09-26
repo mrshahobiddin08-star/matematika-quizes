@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matritsalar va Determinant — Bilim Sinovi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<style>
+  :root{
+    --ink:#1B2440;
+    --ink-soft:#4A5170;
+    --paper:#FAF8F3;
+    --card:#FFFFFF;
+    --line:#E4E0D6;
+    --teal:#2F8F86;
+    --teal-dark:#1F6B64;
+    --amber:#E8A33D;
+    --correct:#3FA34D;
+    --wrong:#D64545;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    color:var(--ink);
+    background-color:var(--paper);
+    background-image:
+      linear-gradient(90deg, var(--line) 1px, transparent 1px),
+      linear-gradient(180deg, var(--line) 1px, transparent 1px);
+    background-size:34px 34px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:32px 16px 60px;
+  }
+  h1,h2,h3{font-family:'Fraunces',serif;margin:0;}
+  .site-head{
+    text-align:center;
+    max-width:640px;
+    margin-bottom:28px;
+  }
+  .site-head .eyebrow{
+    color:var(--teal-dark);
+    font-weight:600;
+    font-size:0.95rem;
+    letter-spacing:0.01em;
+  }
+  .site-head h1{
+    font-size:clamp(1.7rem, 4vw, 2.4rem);
+    font-weight:700;
+    line-height:1.15;
+    margin-top:6px;
+  }
+  .site-head p{
+    color:var(--ink-soft);
+    font-size:0.98rem;
+    margin-top:10px;
+    line-height:1.5;
+  }
+
+  .stage{
+    position:relative;
+    width:100%;
+    max-width:640px;
+    display:flex;
+    align-items:stretch;
+  }
+  .bracket{
+    font-family:'Fraunces',serif;
+    font-size:clamp(3rem, 9vw, 5.5rem);
+    font-weight:400;
+    color:var(--ink);
+    opacity:0.28;
+    line-height:1;
+    user-select:none;
+    align-self:center;
+    flex:0 0 auto;
+    width:28px;
+    text-align:center;
+  }
+  .bracket.right{transform:scaleX(-1);}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:0 1px 0 var(--line);
+    padding:32px 28px;
+    flex:1 1 auto;
+    min-width:0;
+  }
+
+  /* ---------- Start screen ---------- */
+  #start-screen .facts{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin:22px 0 24px;
+  }
+  .fact{
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 10px;
+    text-align:center;
+  }
+  .fact .num{
+    font-family:'Fraunces',serif;
+    font-size:1.5rem;
+    font-weight:700;
+    color:var(--teal-dark);
+    display:block;
+  }
+  .fact .lab{font-size:0.78rem;color:var(--ink-soft);}
+
+  label{font-size:0.9rem;color:var(--ink-soft);display:block;margin-bottom:6px;}
+  input[type=text]{
+    width:100%;
+    font-family:'Inter',sans-serif;
+    font-size:1rem;
+    padding:11px 13px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--paper);
+    color:var(--ink);
+  }
+  input[type=text]:focus{outline:2px solid var(--teal);outline-offset:1px;}
+
+  button{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:0.98rem;
+    cursor:pointer;
+    border:none;
+    border-radius:10px;
+    transition:transform .12s ease, background-color .12s ease;
+  }
+  button:active{transform:scale(0.98);}
+  .btn-primary{
+    background:var(--teal-dark);
+    color:#fff;
+    padding:13px 22px;
+    width:100%;
+    margin-top:18px;
+  }
+  .btn-primary:hover{background:var(--teal);}
+  .btn-ghost{
+    background:transparent;
+    color:var(--teal-dark);
+    border:1px solid var(--teal-dark);
+    padding:12px 22px;
+    width:100%;
+    margin-top:12px;
+  }
+  .btn-ghost:hover{background:rgba(47,143,134,0.08);}
+
+  /* ---------- Quiz screen ---------- */
+  #quiz-screen{display:none;}
+  .quiz-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+  }
+  .matrix-progress{
+    display:grid;
+    grid-template-columns:repeat(10, 1fr);
+    gap:4px;
+    margin-bottom:18px;
+  }
+  .matrix-progress span{
+    height:7px;
+    border-radius:2px;
+    background:var(--line);
+  }
+  .matrix-progress span.done{background:var(--teal-dark);}
+  .matrix-progress span.current{background:var(--amber);}
+
+  .timer-track{
+    height:6px;
+    width:100%;
+    background:var(--line);
+    border-radius:3px;
+    overflow:hidden;
+    margin-bottom:20px;
+  }
+  .timer-fill{
+    height:100%;
+    width:100%;
+    background:var(--teal);
+    border-radius:3px;
+    transition:width 1s linear, background-color .3s ease;
+  }
+
+  #question-text{
+    font-family:'Fraunces',serif;
+    font-size:1.25rem;
+    font-weight:600;
+    line-height:1.4;
+    margin-bottom:20px;
+  }
+
+  .options{display:flex;flex-direction:column;gap:10px;}
+  .option{
+    text-align:left;
+    background:var(--paper);
+    border:1px solid var(--line);
+    color:var(--ink);
+    padding:13px 16px;
+    font-size:0.98rem;
+    border-radius:10px;
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+  }
+  .option .tag{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    color:var(--teal-dark);
+    flex:0 0 auto;
+  }
+  .option:hover:not(:disabled){border-color:var(--teal);}
+  .option:disabled{cursor:default;}
+  .option.correct{background:rgba(63,163,77,0.12);border-color:var(--correct);}
+  .option.wrong{background:rgba(214,69,69,0.1);border-color:var(--wrong);}
+  .option.dim{opacity:0.55;}
+
+  #feedback{
+    margin-top:16px;
+    min-height:26px;
+    font-size:0.95rem;
+    font-weight:600;
+  }
+  #feedback.ok{color:var(--correct);}
+  #feedback.bad{color:var(--wrong);}
+
+  .next-row{margin-top:6px;}
+
+  /* ---------- Result / certificate screen ---------- */
+  #result-screen{display:none;text-align:center;}
+  #result-screen .score-big{
+    font-family:'Fraunces',serif;
+    font-size:3rem;
+    font-weight:700;
+    color:var(--teal-dark);
+    margin:6px 0 2px;
+  }
+  #result-screen .score-sub{color:var(--ink-soft);font-size:0.95rem;margin-bottom:18px;}
+  #cert-canvas{
+    width:100%;
+    max-width:560px;
+    height:auto;
+    border:1px solid var(--line);
+    border-radius:10px;
+    margin:8px 0 18px;
+  }
+
+  /* ---------- Celebration overlay ---------- */
+  #celebrate-layer{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:50;
+  }
+  .balloon{
+    position:absolute;
+    bottom:-60px;
+    font-size:2.4rem;
+    animation:rise 2.6s ease-in forwards;
+  }
+  @keyframes rise{
+    to{ transform:translateY(-115vh) translateX(var(--drift,0px)) rotate(var(--rot,0deg)); opacity:0; }
+  }
+  .star-pop{
+    position:absolute;
+    font-size:1.6rem;
+    animation:pop 1.1s ease-out forwards;
+  }
+  @keyframes pop{
+    0%{ transform:translate(0,0) scale(0.3); opacity:0; }
+    30%{ opacity:1; }
+    100%{ transform:translate(var(--dx),var(--dy)) scale(1.1); opacity:0; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .balloon,.star-pop{animation:none;display:none;}
+  }
+
+  @media (max-width:480px){
+    .bracket{display:none;}
+    .card{padding:24px 18px;}
+    #start-screen .facts{grid-template-columns:1fr 1fr 1fr;gap:8px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="site-head">
+  <div class="eyebrow">Amaliy matematika · Chiziqli algebra</div>
+  <h1>Matritsalar va Determinant — Bilim Sinovi</h1>
+  <p>Matritsalar, ularning amallari va determinant mavzusi bo'yicha 40 ta savoldan iborat interaktiv test. Har bir to'g'ri javobdan so'ng tabriklaymiz, oxirida esa shaxsiy sertifikatingizni olasiz.</p>
+</div>
+
+<div class="stage">
+  <div class="bracket left">[</div>
+
+  <div class="card" id="app-card">
+
+    <!-- START SCREEN -->
+    <div id="start-screen">
+      <h2 style="font-size:1.25rem;">Boshlashdan oldin</h2>
+      <div class="facts">
+        <div class="fact"><span class="num">40</span><span class="lab">savol</span></div>
+        <div class="fact"><span class="num">4</span><span class="lab">variantdan bittasi</span></div>
+        <div class="fact"><span class="num">30s</span><span class="lab">har bir savolga</span></div>
+      </div>
+      <label for="name-input">Familiya va ismingiz (sertifikat uchun)</label>
+      <input type="text" id="name-input" placeholder="Masalan: Aliyev Vali" maxlength="60">
+      <button class="btn-primary" id="start-btn">Testni boshlash</button>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div id="quiz-screen">
+      <div class="quiz-top">
+        <span id="q-counter">Savol 1 / 40</span>
+        <span id="score-live">To'g'ri: 0</span>
+      </div>
+      <div class="matrix-progress" id="progress-grid"></div>
+      <div class="timer-track"><div class="timer-fill" id="timer-fill"></div></div>
+
+      <h3 id="question-text"></h3>
+      <div class="options" id="options-wrap"></div>
+      <div id="feedback"></div>
+      <div class="next-row">
+        <button class="btn-ghost" id="next-btn" style="display:none;">Keyingi savol →</button>
+      </div>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div id="result-screen">
+      <div class="eyebrow" style="color:var(--teal-dark);font-weight:600;">Test yakunlandi</div>
+      <div class="score-big" id="score-big">0%</div>
+      <div class="score-sub" id="score-sub"></div>
+      <canvas id="cert-canvas" width="1000" height="660"></canvas>
+      <button class="btn-primary" id="download-btn">Sertifikatni yuklab olish (PNG)</button>
+      <button class="btn-ghost" id="restart-btn">Testni qaytadan boshlash</button>
+    </div>
+
+  </div>
+
+  <div class="bracket right">[</div>
+</div>
+
+<div id="celebrate-layer"></div>
+
+<script>
+/* =========================================================
+   1) SAVOLLAR BAZASI — 40 ta, mantiqan ketma-ket guruhlangan:
+      1-10   Matritsa asoslari va turlari
+      11-20  Matritsalar ustidagi amallar
+      21-34  Determinant: ta'rifi, xossalari, hisoblash
+      35-40  Teskari matritsa, rang, qo'llanilishi
+   ========================================================= */
+const QUESTIONS = [
+  {q:"Matritsa nima?", o:["Sonlarning to'g'ri burchakli jadvali","Faqat kvadrat sonlar to'plami","Bitta ustundan iborat sonlar ketma-ketligi","Tenglamalar tizimi"], c:0},
+  {q:"m×n o'lchamli matritsada nechta element bo'ladi?", o:["m + n","m · n","m − n","m / n"], c:1},
+  {q:"m×n o'lchamli matritsada \"m\" nimani bildiradi?", o:["Ustunlar sonini","Satrlar sonini","Elementlar sonini","Diagonal elementlar sonini"], c:1},
+  {q:"Kvadrat matritsa deb qanday matritsaga aytiladi?", o:["Satrlar soni ustunlar soniga teng bo'lgan matritsa","Faqat bitta satrli matritsa","Barcha elementlari nolga teng matritsa","Faqat musbat sonlardan iborat matritsa"], c:0},
+  {q:"Barcha elementlari nolga teng bo'lgan matritsa qanday ataladi?", o:["Birlik matritsa","Nol matritsa","Diagonal matritsa","Simmetrik matritsa"], c:1},
+  {q:"Bosh diagonalidagi elementlari 1 ga, qolgan barcha elementlari 0 ga teng bo'lgan kvadrat matritsa qanday ataladi?", o:["Nol matritsa","Transponirlangan matritsa","Birlik matritsa","Nosimmetrik matritsa"], c:2},
+  {q:"Bosh diagonaldan tashqari barcha elementlari nolga teng bo'lgan kvadrat matritsa qanday ataladi?", o:["Diagonal matritsa","Uchburchak matritsa","Birlik matritsa","Nol matritsa"], c:0},
+  {q:"Agar A matritsa uchun A = Aᵀ shart bajarilsa, A qanday matritsa deyiladi?", o:["Antisimmetrik","Simmetrik","Diagonal","Skalyar"], c:1},
+  {q:"Transponirlangan matritsa (Aᵀ) qanday hosil qilinadi?", o:["Barcha elementlar ishorasini almashtirib","Satr va ustunlarning o'rnini almashtirib","Har bir elementni kvadratga ko'tarib","Diagonal elementlarni nolga aylantirib"], c:1},
+  {q:"Ikkita matritsa teng bo'lishi uchun qanday shart bajarilishi kerak?", o:["Determinantlari teng bo'lishi kerak","O'lchamlari bir xil va mos elementlari teng bo'lishi kerak","Faqat o'lchamlari bir xil bo'lishi kifoya","Elementlari yig'indisi nolga teng bo'lishi kerak"], c:1},
+  {q:"Ikki matritsani qo'shish (A + B) mumkin bo'lishi uchun qanday shart bajarilishi kerak?", o:["Ikkalasi ham kvadrat bo'lishi kerak","O'lchamlari bir xil bo'lishi kerak","Determinantlari teng bo'lishi kerak","Birortasi birlik matritsa bo'lishi kerak"], c:1},
+  {q:"Matritsani songa (skalyarga) ko'paytirishda nima sodir bo'ladi?", o:["Faqat bosh diagonal elementlari ko'paytiriladi","Matritsaning har bir elementi shu songa ko'paytiriladi","Matritsaning o'lchami o'zgaradi","Faqat birinchi satr ko'paytiriladi"], c:1},
+  {q:"A (m×n) va B (p×q) matritsalarni ko'paytirish (A·B) mumkin bo'lishi uchun qanday shart bajarilishi kerak?", o:["m = p bo'lishi kerak","n = p bo'lishi kerak","n = q bo'lishi kerak","m = q bo'lishi kerak"], c:1},
+  {q:"A (m×n) va B (n×p) matritsalar ko'paytmasi A·B qanday o'lchamga ega bo'ladi?", o:["m×p","n×n","m×n","p×m"], c:0},
+  {q:"Matritsalarni ko'paytirish amali umumiy holda kommutativmi (ya'ni A·B = B·A)?", o:["Ha, har doim","Yo'q, umuman olganda emas","Faqat kvadrat matritsalar uchun ha","Faqat diagonal matritsalar uchun yo'q"], c:1},
+  {q:"(A·B)ᵀ ifodasi nimaga teng?", o:["Aᵀ · Bᵀ","Bᵀ · Aᵀ","A · B", "Aᵀ + Bᵀ"], c:1},
+  {q:"(A + B)ᵀ ifodasi nimaga teng?", o:["Aᵀ + Bᵀ","Aᵀ − Bᵀ","A + B","Bᵀ − Aᵀ"], c:0},
+  {q:"A · I (I — birlik matritsa) ko'paytmasi nimaga teng?", o:["Nol matritsaga","A ning o'ziga","I ning o'ziga","Aᵀ ga"], c:1},
+  {q:"Har qanday A matritsa uchun A · 0 (nol matritsa) ko'paytmasi nimaga teng?", o:["A ga teng","Nol matritsaga teng","Birlik matritsaga teng","Aᵀ ga teng"], c:1},
+  {q:"Matritsalarni ko'paytirish amali assotsiativmi, ya'ni (A·B)·C = A·(B·C)?", o:["Ha","Yo'q","Faqat 2×2 matritsalar uchun","Faqat determinant nolga teng bo'lganda"], c:0},
+  {q:"Determinant faqat qanday matritsalar uchun aniqlanadi?", o:["Har qanday matritsa uchun","Faqat kvadrat matritsalar uchun","Faqat diagonal matritsalar uchun","Faqat birlik matritsalar uchun"], c:1},
+  {q:"[[a,b],[c,d]] ko'rinishidagi 2×2 matritsaning determinanti qanday hisoblanadi?", o:["ad − bc","ac − bd","ab − cd","ad + bc"], c:0},
+  {q:"A = [[2,3],[1,4]] matritsaning determinanti nechaga teng?", o:["5","8","−5","11"], c:0},
+  {q:"3×3 o'lchamli matritsaning determinantini hisoblashda ko'pincha qanday qoida qo'llaniladi?", o:["Kramer qoidasi","Sarrus qoidasi","Gauss usuli","Bezu teoremasi"], c:1},
+  {q:"A = [[1,2,3],[0,1,4],[5,6,0]] matritsaning determinanti nechaga teng?", o:["1","−1","0","24"], c:0},
+  {q:"Agar matritsaning biror satri (yoki ustuni) butunlay noldan iborat bo'lsa, uning determinanti nimaga teng bo'ladi?", o:["1","0","−1","Aniqlanmaydi"], c:1},
+  {q:"Agar matritsaning ikkita satri (yoki ustuni) bir-biriga aynan teng bo'lsa, uning determinanti nechaga teng?", o:["0","1","−1","Har doim manfiy bo'ladi"], c:0},
+  {q:"Matritsaning ikkita satri o'rin almashtirilsa, determinantning qiymati qanday o'zgaradi?", o:["Umuman o'zgarmaydi","Ishorasi qarama-qarshiga o'zgaradi, moduli saqlanadi","Har doim nolga teng bo'lib qoladi","Ikki barobar ortadi"], c:1},
+  {q:"det(A) va det(Aᵀ) orasidagi bog'lanish qanday ifodalanadi?", o:["det(A) = −det(Aᵀ)","det(A) = det(Aᵀ)","det(A) = 2·det(Aᵀ)","Ular orasida bog'liqlik yo'q"], c:1},
+  {q:"n×n o'lchamli A matritsani k songa ko'paytirsak (kA), det(kA) nimaga teng bo'ladi?", o:["k · det(A)","kⁿ · det(A)","det(A) + k","det(A), o'zgarmaydi"], c:1},
+  {q:"Ikkita kvadrat matritsa uchun det(A·B) qanday ifodalanadi?", o:["det(A) + det(B)","det(A) · det(B)","det(A) − det(B)","det(A) / det(B)"], c:1},
+  {q:"Matritsaning biror elementiga mos \"minor\" deb nimaga aytiladi?", o:["Shu elementning o'ziga","Shu element joylashgan satr va ustunni o'chirishdan hosil bo'lgan kichik matritsaning determinantiga","Matritsaning bosh diagonali elementlari yig'indisiga","Matritsaning teskarisiga"], c:1},
+  {q:"Elementga mos kofaktor (algebraik to'ldiruvchi) qanday hisoblanadi?", o:["Minorga teng","(−1)^(i+j) ko'paytirilgan minorga teng","Minordan 1 ni ayirib","Minorni kvadratga ko'tarib"], c:1},
+  {q:"Determinantni biror satr (yoki ustun) bo'yicha yoyish usuli qanday ataladi?", o:["Kramer yoyilmasi","Laplas yoyilmasi","Furye yoyilmasi","Teylor yoyilmasi"], c:1},
+  {q:"Kvadrat A matritsa uchun teskari matritsa A⁻¹ mavjud bo'lishi uchun qanday shart bajarilishi kerak?", o:["det(A) = 0","det(A) ≠ 0","A simmetrik bo'lishi kerak","A diagonal bo'lishi kerak"], c:1},
+  {q:"A⁻¹ = (1/det A) · adj(A) formulasida \"adj(A)\" nimani bildiradi?", o:["A ning transponirlanganini","A ning kofaktorlar matritsasining transponirlanganini","A ning o'zini","A ning kvadratini"], c:1},
+  {q:"Determinanti nolga teng bo'lgan kvadrat matritsa qanday ataladi?", o:["Regulyar (noyob) matritsa","Maxsus (singulyar) matritsa","Simmetrik matritsa","Ortogonal matritsa"], c:1},
+  {q:"Matritsaning rangi (rank) nimani bildiradi?", o:["Matritsadagi nol bo'lmagan elementlar sonini","Chiziqli erkli satr (yoki ustun)larning maksimal sonini","Matritsaning determinantini","Matritsaning tartibini (o'lchamini)"], c:1},
+  {q:"Kramer qoidasi nima uchun ishlatiladi?", o:["Matritsani transponirlash uchun","Chiziqli tenglamalar sistemasini determinantlar yordamida yechish uchun","Matritsaning rangini topish uchun","Matritsalarni ko'paytirish uchun"], c:1},
+  {q:"Uch o'lchamli fazoda uchta vektor yordamida yasalgan parallelepipedning hajmi qanday hisoblanadi?", o:["Vektorlardan tuzilgan matritsaning izi (trace) orqali","Vektorlardan tuzilgan matritsaning determinanti moduli orqali","Vektorlarning yig'indisi orqali","Vektorlarning o'rtacha qiymati orqali"], c:1}
+];
+
+const TIME_PER_Q = 30; // soniya
+const LETTERS = ["A","B","C","D"];
+
+let current = 0;
+let score = 0;
+let timeLeft = TIME_PER_Q;
+let timerId = null;
+let answered = false;
+
+const startScreen = document.getElementById('start-screen');
+const quizScreen = document.getElementById('quiz-screen');
+const resultScreen = document.getElementById('result-screen');
+const nameInput = document.getElementById('name-input');
+
+document.getElementById('start-btn').addEventListener('click', () => {
+  startScreen.style.display = 'none';
+  quizScreen.style.display = 'block';
+  buildProgressGrid();
+  renderQuestion();
+});
+
+document.getElementById('next-btn').addEventListener('click', goNext);
+document.getElementById('restart-btn').addEventListener('click', () => location.reload());
+
+function buildProgressGrid(){
+  const grid = document.getElementById('progress-grid');
+  grid.innerHTML = '';
+  // 40 ta kataklikni 10 ustunli "matritsa" ko'rinishida chizamiz
+  for(let i=0;i<QUESTIONS.length;i++){
+    const span = document.createElement('span');
+    span.id = 'cell-'+i;
+    grid.appendChild(span);
+  }
+  updateProgressGrid();
+}
+function updateProgressGrid(){
+  for(let i=0;i<QUESTIONS.length;i++){
+    const cell = document.getElementById('cell-'+i);
+    cell.className = i < current ? 'done' : (i === current ? 'current' : '');
+  }
+}
+
+function renderQuestion(){
+  answered = false;
+  clearInterval(timerId);
+  timeLeft = TIME_PER_Q;
+
+  document.getElementById('q-counter').textContent = `Savol ${current+1} / ${QUESTIONS.length}`;
+  document.getElementById('score-live').textContent = `To'g'ri: ${score}`;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = '';
+  document.getElementById('next-btn').style.display = 'none';
+  updateProgressGrid();
+
+  const item = QUESTIONS[current];
+  document.getElementById('question-text').textContent = `${current+1}. ${item.q}`;
+
+  const wrap = document.getElementById('options-wrap');
+  wrap.innerHTML = '';
+  item.o.forEach((text, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="tag">${LETTERS[idx]}</span><span>${text}</span>`;
+    btn.addEventListener('click', () => selectAnswer(idx));
+    wrap.appendChild(btn);
+  });
+
+  const fill = document.getElementById('timer-fill');
+  fill.style.transition = 'none';
+  fill.style.width = '100%';
+  fill.style.backgroundColor = 'var(--teal)';
+  // keyingi freymda transition qaytariladi, shunda "1s linear" tekis ishlaydi
+  requestAnimationFrame(()=>{ fill.style.transition = 'width 1s linear, background-color .3s ease'; });
+
+  timerId = setInterval(tick, 1000);
+}
+
+function tick(){
+  timeLeft -= 1;
+  const pct = Math.max(0, (timeLeft/TIME_PER_Q)*100);
+  const fill = document.getElementById('timer-fill');
+  fill.style.width = pct + '%';
+  if(pct <= 33) fill.style.backgroundColor = 'var(--wrong)';
+  else if(pct <= 60) fill.style.backgroundColor = 'var(--amber)';
+  else fill.style.backgroundColor = 'var(--teal)';
+
+  if(timeLeft <= 0){
+    clearInterval(timerId);
+    if(!answered) timeUp();
+  }
+}
+
+function timeUp(){
+  answered = true;
+  const item = QUESTIONS[current];
+  const opts = document.querySelectorAll('.option');
+  opts.forEach((b,idx)=>{
+    b.disabled = true;
+    if(idx === item.c) b.classList.add('correct');
+    else b.classList.add('dim');
+  });
+  const fb = document.getElementById('feedback');
+  fb.textContent = "Vaqt tugadi. To'g'ri javob belgilandi.";
+  fb.className = 'bad';
+  document.getElementById('next-btn').style.display = 'block';
+}
+
+function selectAnswer(idx){
+  if(answered) return;
+  answered = true;
+  clearInterval(timerId);
+
+  const item = QUESTIONS[current];
+  const opts = document.querySelectorAll('.option');
+  const fb = document.getElementById('feedback');
+
+  opts.forEach((b, i) => {
+    b.disabled = true;
+    if(i === item.c) b.classList.add('correct');
+    else if(i === idx) b.classList.add('wrong');
+    else b.classList.add('dim');
+  });
+
+  if(idx === item.c){
+    score += 1;
+    fb.textContent = "To'g'ri! Ajoyib.";
+    fb.className = 'ok';
+    document.getElementById('score-live').textContent = `To'g'ri: ${score}`;
+    celebrate();
+  } else {
+    fb.textContent = "Noto'g'ri. To'g'ri javob belgilandi.";
+    fb.className = 'bad';
+  }
+  document.getElementById('next-btn').style.display = 'block';
+}
+
+function goNext(){
+  current += 1;
+  if(current >= QUESTIONS.length){
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+/* =========================================================
+   2) TABRIKLASH ANIMATSIYALARI — har safar tasodifiy biri
+   ========================================================= */
+function celebrate(){
+  const kinds = ['confetti','balloons','stars'];
+  const kind = kinds[Math.floor(Math.random()*kinds.length)];
+  if(kind === 'confetti' && window.confetti){
+    confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 }, colors:['#2F8F86','#E8A33D','#3FA34D','#1B2440'] });
+  } else if(kind === 'balloons'){
+    launchBalloons();
+  } else {
+    launchStars();
+  }
+}
+
+function launchBalloons(){
+  const layer = document.getElementById('celebrate-layer');
+  const emojis = ['🎈','🎈','🎈'];
+  for(let i=0;i<7;i++){
+    const b = document.createElement('div');
+    b.className = 'balloon';
+    b.textContent = emojis[i % emojis.length];
+    b.style.left = (5 + Math.random()*90) + 'vw';
+    b.style.setProperty('--drift', (Math.random()*80-40) + 'px');
+    b.style.setProperty('--rot', (Math.random()*40-20) + 'deg');
+    b.style.animationDelay = (Math.random()*0.4)+'s';
+    layer.appendChild(b);
+    setTimeout(()=>b.remove(), 3200);
+  }
+}
+
+function launchStars(){
+  const layer = document.getElementById('celebrate-layer');
+  const cx = 50, cy = 50; // vw/vh markazga yaqin
+  for(let i=0;i<14;i++){
+    const s = document.createElement('div');
+    s.className = 'star-pop';
+    s.textContent = Math.random()>0.5 ? '⭐' : '✨';
+    s.style.left = cx + 'vw';
+    s.style.top = cy + 'vh';
+    const angle = Math.random()*Math.PI*2;
+    const dist = 80 + Math.random()*160;
+    s.style.setProperty('--dx', Math.cos(angle)*dist + 'px');
+    s.style.setProperty('--dy', Math.sin(angle)*dist + 'px');
+    layer.appendChild(s);
+    setTimeout(()=>s.remove(), 1300);
+  }
+}
+
+/* =========================================================
+   3) NATIJA VA SERTIFIKAT
+   ========================================================= */
+function showResult(){
+  quizScreen.style.display = 'none';
+  resultScreen.style.display = 'block';
+
+  const total = QUESTIONS.length;
+  const pct = Math.round((score/total)*100);
+  document.getElementById('score-big').textContent = pct + '%';
+  document.getElementById('score-sub').textContent =
+    `${total} savoldan ${score} tasiga to'g'ri javob berdingiz.`;
+
+  drawCertificate(nameInput.value.trim() || "Ishtirokchi", score, total, pct);
+
+  // Yakuniy natija uchun ham kichik tabrik
+  if(window.confetti){
+    confetti({ particleCount: 140, spread: 100, origin: { y: 0.5 } });
+  }
+
+  sendResultToServer(nameInput.value.trim() || "Ishtirokchi", score, total, pct);
+}
+
+// Natijani serverga yuboradi, shunda administrator "/natijalar" sahifasida
+// kim, qachon, nechta savolga to'g'ri javob berganini ko'ra oladi.
+// Tarmoqda muammo bo'lsa ham quiz ishlashda davom etadi (xato jim yutiladi).
+function sendResultToServer(ism, togri, jami, foiz){
+  fetch('/api/natija', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ism, togri, jami, foiz })
+  }).catch(() => { /* aloqa bo'lmasa ham foydalanuvchiga xalaqit bermaymiz */ });
+}
+
+function drawCertificate(name, score, total, pct){
+  const canvas = document.getElementById('cert-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // Fon
+  ctx.fillStyle = '#FAF8F3';
+  ctx.fillRect(0,0,W,H);
+
+  // Tashqi ramka
+  ctx.strokeStyle = '#1B2440';
+  ctx.lineWidth = 6;
+  ctx.strokeRect(24,24,W-48,H-48);
+  ctx.strokeStyle = '#E8A33D';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(38,38,W-76,H-76);
+
+  ctx.textAlign = 'center';
+
+  // Eyebrow
+  ctx.fillStyle = '#2F8F86';
+  ctx.font = '600 20px Inter, sans-serif';
+  ctx.fillText('AMALIY MATEMATIKA · CHIZIQLI ALGEBRA', W/2, 100);
+
+  // Sarlavha
+  ctx.fillStyle = '#1B2440';
+  ctx.font = '700 46px Fraunces, serif';
+  ctx.fillText('SERTIFIKAT', W/2, 160);
+
+  ctx.font = '400 20px Inter, sans-serif';
+  ctx.fillStyle = '#4A5170';
+  ctx.fillText('ushbu sertifikat quyidagi shaxsga topshiriladi:', W/2, 210);
+
+  // Ism
+  ctx.font = '600 38px Fraunces, serif';
+  ctx.fillStyle = '#1B2440';
+  ctx.fillText(name, W/2, 270);
+
+  // Chiziqcha
+  ctx.strokeStyle = '#E4E0D6';
+  ctx.beginPath();
+  ctx.moveTo(W/2-220,290);
+  ctx.lineTo(W/2+220,290);
+  ctx.stroke();
+
+  // Tavsif
+  ctx.font = '400 19px Inter, sans-serif';
+  ctx.fillStyle = '#4A5170';
+  ctx.fillText('"Matritsalar va Determinant" bilim sinovini yakunlagani uchun', W/2, 330);
+
+  // Natija bloki
+  ctx.font = '700 64px Fraunces, serif';
+  ctx.fillStyle = '#2F8F86';
+  ctx.fillText(pct + '%', W/2, 420);
+
+  ctx.font = '500 19px Inter, sans-serif';
+  ctx.fillStyle = '#1B2440';
+  ctx.fillText(`${total} savoldan ${score} tasiga to'g'ri javob berildi`, W/2, 455);
+
+  // Sana
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('uz-UZ');
+  ctx.font = '400 16px Inter, sans-serif';
+  ctx.fillStyle = '#4A5170';
+  ctx.fillText('Berilgan sana: ' + dateStr, W/2, 500);
+
+  // Beruvchi tashkilot
+  ctx.font = '600 22px Fraunces, serif';
+  ctx.fillStyle = '#1B2440';
+  ctx.fillText('ECO26-103', W/2, H-70);
+  ctx.font = '400 15px Inter, sans-serif';
+  ctx.fillStyle = '#4A5170';
+  ctx.fillText('tomonidan taqdim etildi', W/2, H-46);
+}
+
+document.getElementById('download-btn').addEventListener('click', () => {
+  const canvas = document.getElementById('cert-canvas');
+  const link = document.createElement('a');
+  const safeName = (nameInput.value.trim() || 'ishtirokchi').replace(/\s+/g,'_');
+  link.download = `sertifikat_${safeName}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+});
+</script>
+</body>
+</html>
