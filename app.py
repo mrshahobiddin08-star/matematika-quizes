@@ -160,9 +160,6 @@ if __name__ == "__main__":
 # Total Questions: 60 (20 questions per main topic area)
 # Designed for 30 seconds per question pacing.
 
-# Agar sizda asosiy savollar ro'yxati QUESTIONS bo'lsa:
-QUESTIONS = QUESTIONS + QUIZ_QUESTIONS_EXTENSION
-QUIZ_QUESTIONS_EXTENSION = [
     # ==========================================
     # SECTION 1: Chiziqli tenglamalar sistemasi (Matritsa, Gauss va Kramer usullari)
     # ==========================================
@@ -1855,7 +1852,4 @@ QUIZ_QUESTIONS_EXTENSION = [
         "tags": ["vectors", "theory"]
     }
 ]
-```eof
-
-### Xulosa va Tavsiya
-Qo'shimcha 60 ta savol matritsalar, Gauss va Kramer usullari, kompleks sonlar hamda vektorlar mavzularini to'liq qamrab oladigan qilib tayyorlandi. Har bir savol mantiqiy ketma-ketlikda tuzilgan bo'lib, talabalarning bilimini sinash va 30 soniya ichida ishlashiga moslashtirilgan. Uni bevosita `app.py` faylingizga qo'shib ishlatishingiz mumkin. O'qishlaringizga omad tilayman!
+QUESTIONS = QUESTIONS + QUIZ_QUESTIONS_EXTENSION
