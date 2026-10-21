@@ -156,10 +156,9 @@ if __name__ == "__main__":
     app.run(host="0.0.0.0", port=port, debug=debug)
 
 
-# app.py - Quiz Questions Extension (Topics: Linear Systems & Matrices, Complex Numbers, Vectors)
-# Total Questions: 60 (20 questions per main topic area)
-# Designed for 30 seconds per question pacing.
 
+# Designed for 30 seconds per question pacing.
+QUIZ_QUESTIONS_EXTENSION = [
     # ==========================================
     # SECTION 1: Chiziqli tenglamalar sistemasi (Matritsa, Gauss va Kramer usullari)
     # ==========================================
