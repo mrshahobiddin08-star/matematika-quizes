@@ -160,6 +160,8 @@ if __name__ == "__main__":
 # Total Questions: 60 (20 questions per main topic area)
 # Designed for 30 seconds per question pacing.
 
+# Agar sizda asosiy savollar ro'yxati QUESTIONS bo'lsa:
+QUESTIONS = QUESTIONS + QUIZ_QUESTIONS_EXTENSION
 QUIZ_QUESTIONS_EXTENSION = [
     # ==========================================
     # SECTION 1: Chiziqli tenglamalar sistemasi (Matritsa, Gauss va Kramer usullari)
