@@ -1,25 +1,40 @@
 from flask import Flask
+from questions import questions
+import random
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return """
-    <h1>Matematika Quizlar</h1>
 
-    <h2>Mavzular:</h2>
+    q = random.choice(questions)
 
-    <ul>
-        <li>Matritsalar</li>
-        <li>Determinantlar</li>
-        <li>Chiziqli tenglamalar</li>
-        <li>Kompleks sonlar</li>
-        <li>Vektorlar</li>
-        <li>Funksiyalar</li>
-    </ul>
+    html = f"""
+    <html>
+    <head>
+        <title>Matematika Quiz</title>
+    </head>
 
-    <p>120 ta savol bazasi tayyorlanmoqda.</p>
+    <body style="font-family:Arial;padding:40px;">
+
+        <h1>{q['subject']}</h1>
+
+        <h2>{q['question']}</h2>
+
+        <ol type="A">
     """
-    
+
+    for option in q["options"]:
+        html += f"<li>{option}</li>"
+
+    html += """
+        </ol>
+
+    </body>
+    </html>
+    """
+
+    return html
+
 if __name__ == "__main__":
     app.run()
